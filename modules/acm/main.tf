@@ -1,9 +1,13 @@
+# Retrieve Route53 hosted zone information
+data "aws_route53_zone" "my_domain" {
+  name         = var.domain_name
+  private_zone = false
+}
 
-
-
+# Request ACM certificate in us-east-1 for CloudFront
 resource "aws_acm_certificate" "website_cert" {
-  provider                  = aws.use1
-  domain_name               = local.my_domain
+  #provider                  = aws.use1
+  domain_name               = var.domain_name
   subject_alternative_names = var.aliases
   validation_method         = "DNS"
 
@@ -31,7 +35,7 @@ resource "aws_route53_record" "cert_validation" {
 
 # validate the certificate
 resource "aws_acm_certificate_validation" "website_cert_validation" {
-  provider                = aws.use1
+  #provider                = aws.use1
   certificate_arn         = aws_acm_certificate.website_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }

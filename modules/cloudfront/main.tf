@@ -1,9 +1,9 @@
 resource "aws_cloudfront_distribution" "s3_distribution" {
   aliases = var.aliases
   origin {
-    domain_name              = aws_s3_bucket.static_website_bucket.bucket_regional_domain_name
-    origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
-    origin_id                = local.s3_origin_id
+    domain_name              = var.bucket_domain_name
+    origin_access_control_id = var.oac_id
+    origin_id                = var.s3_origin_id
   }
 
   enabled             = true
@@ -14,7 +14,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = local.s3_origin_id
+    target_origin_id = var.s3_origin_id
 
     forwarded_values {
       query_string = false
@@ -47,26 +47,21 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate_validation.website_cert_validation.certificate_arn
+    acm_certificate_arn = var.certificate_arn
     ssl_support_method  = "sni-only"
   }
 }
 
-# Create Route53 records for the CloudFront distribution aliases
-data "aws_route53_zone" "my_domain" {
-  name         = local.my_domain
-  private_zone = false
-}
 
-resource "aws_route53_record" "cloudfront" {
-  for_each = toset(var.aliases)
-  zone_id  = data.aws_route53_zone.my_domain.zone_id
-  name     = each.value
-  type     = "A"
+# resource "aws_route53_record" "cloudfront" {
+#   for_each = toset(var.aliases)
+#   zone_id  = data.aws_route53_zone.my_domain.zone_id
+#   name     = each.value
+#   type     = "A"
 
-  alias {
-    name                   = aws_cloudfront_distribution.s3_distribution.domain_name
-    zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
-    evaluate_target_health = false
-  }
-}
+#   alias {
+#     name                   = aws_cloudfront_distribution.s3_distribution.domain_name
+#     zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
+#     evaluate_target_health = false
+#   }
+# }

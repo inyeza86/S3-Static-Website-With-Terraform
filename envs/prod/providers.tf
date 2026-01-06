@@ -1,0 +1,20 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "6.27.0"
+    }
+
+  }
+}
+
+provider "aws" {
+  region  = "us-east-1"
+  alias   = "use1" # For CloudFront + ACM
+  profile = "messan"
+}
+
+provider "aws" {
+  region  = "us-east-1"
+  profile = "messan"
+}
