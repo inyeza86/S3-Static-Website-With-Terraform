@@ -3,11 +3,15 @@ variable "zone_id" {
   description = "Route53 Hosted Zone ID"
 }
 
-variable "aliases" {
-  type        = list(string)
-  description = "Domain aliases to create A records for"
-}
+# variable "aliases" {
+#   type        = list(string)
+#   description = "Domain aliases to create A records for"
+# }
 
+variable "domain_name" {
+  type        = string
+  description = "The primary domain name for the website"
+}
 variable "cloudfront_domain" {
   type        = string
   description = "CloudFront distribution domain name"

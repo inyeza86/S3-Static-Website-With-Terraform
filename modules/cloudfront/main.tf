@@ -1,5 +1,5 @@
 resource "aws_cloudfront_distribution" "s3_distribution" {
-  aliases = var.aliases
+  aliases = local.aliases
   origin {
     domain_name              = var.bucket_domain_name
     origin_access_control_id = var.oac_id

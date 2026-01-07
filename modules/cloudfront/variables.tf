@@ -8,10 +8,10 @@ variable "certificate_arn" {
   type        = string
 }
 
-variable "aliases" {
-  description = "The list of domain names for CloudFront distribution"
-  type        = list(string)
-}
+# variable "aliases" {
+#   description = "The list of domain names for CloudFront distribution"
+#   type        = list(string)
+# }
 
 variable "bucket_domain_name" {
   type        = string
@@ -35,5 +35,10 @@ variable "project_name" {
 
 variable "bucket_name" {
   description = "The name of the S3 bucket to host the static website"
+  type        = string
+}
+
+variable "domain_name" {
+  description = "The primary domain name for the website"
   type        = string
 }

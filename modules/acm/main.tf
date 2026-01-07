@@ -8,7 +8,7 @@ data "aws_route53_zone" "my_domain" {
 resource "aws_acm_certificate" "website_cert" {
   #provider                  = aws.use1
   domain_name               = var.domain_name
-  subject_alternative_names = var.aliases
+  subject_alternative_names = local.aliases
   validation_method         = "DNS"
 
   lifecycle {
