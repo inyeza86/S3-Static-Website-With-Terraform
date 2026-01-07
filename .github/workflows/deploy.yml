@@ -39,7 +39,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::473208108378:role/github-actions-terraform-${{ github.event.inputs.environment }}
+          role-to-assume: arn:aws:iam::473208108378:role/github-actions-terraform-prod
           aws-region: ${{ vars.REGION }}
 
       # 5. Terraform Init (remote backend per env)
