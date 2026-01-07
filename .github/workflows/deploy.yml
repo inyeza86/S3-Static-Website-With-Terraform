@@ -50,7 +50,6 @@ jobs:
             -backend-config="bucket=${{ vars.BUCKET }}" \
             -backend-config="key=s3-static-website/${{ github.event.inputs.environment }}/terraform.tfstate" \
             -backend-config="region=${{ vars.AWS_REGION}}" \
-            -backend-config="use_lockfile=true"
 
       # 6. Terraform Plan
       - name: Terraform Plan
