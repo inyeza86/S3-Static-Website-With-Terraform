@@ -57,12 +57,12 @@ jobs:
         working-directory: envs/${{ github.event.inputs.environment }}
         run: |
           terraform plan \
-            -var "bucket_name=${{ vars.BUCKET}}" \
-            -var "aliases=[${{ secrets.ALIASES }}]" \
-            -var "domain_name=${{ secrets.DOMAIN_NAME }}" \
-            -var "project_name=${{ vars.PROJECT_NAME }}" \
-            -var "environment=${{ github.event.inputs.environment }}" \
-            -var "s3_origin_id=${{ vars.S3_ORIGIN_ID }}" \
+            -var="bucket_name=${{ vars.BUCKET}}" \
+            -var="aliases=[${{ secrets.ALIASES }}]" \
+            -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
+            -var="project_name=${{ vars.PROJECT_NAME }}" \
+            -var="environment=${{ github.event.inputs.environment }}" \
+            -var="s3_origin_id=${{ vars.S3_ORIGIN_ID }}" \
             -out=tfplan
 
       # 7. Terraform Apply
