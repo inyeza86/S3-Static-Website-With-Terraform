@@ -4,5 +4,5 @@ output "website_url" {
 }
 output "cloudfront_distribution_id" {
   description = "The ID of the CloudFront distribution"
-  value       = module.cloudfront_distribution.id
+  value       = module.cloudfront_distribution_id
 }
