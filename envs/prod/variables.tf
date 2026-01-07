@@ -17,10 +17,10 @@ variable "domain_name" {
   type        = string
 }
 
-variable "aliases" {
-  description = "The list of domain names for CloudFront distribution"
-  type        = list(string)
-}
+# variable "aliases" {
+#   description = "The list of domain names for CloudFront distribution"
+#   type        = list(string)
+# }
 
 variable "s3_origin_id" {
   description = "The origin ID for the CloudFront distribution"
