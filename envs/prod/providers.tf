@@ -9,12 +9,12 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
-  alias   = "use1" # For CloudFront + ACM
-  profile = "messan"
+  region = "us-east-1"
+  alias  = "use1" # For CloudFront + ACM
+  #profile = "messan"
 }
 
 provider "aws" {
-  region  = "us-east-1"
-  profile = "messan"
+  region = "us-east-1"
+  #profile = "messan"
 }
