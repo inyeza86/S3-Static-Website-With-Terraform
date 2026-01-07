@@ -57,7 +57,6 @@ jobs:
         run: |
           terraform plan \
             -var="bucket_name=${{ vars.BUCKET}}" \
-            -var="aliases=[${{ secrets.ALIASES }}]" \
             -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
             -var="project_name=${{ vars.PROJECT_NAME }}" \
             -var="environment=${{ github.event.inputs.environment }}" \
