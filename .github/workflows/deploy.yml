@@ -1,77 +1,86 @@
-name: Deploy Static Website
+name: Terraform Deploy
 
 on:
-  push:
-    branches:
-      - develop
-      - staging
-      - main
-
-permissions:
-  id-token: write
-  contents: read
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy"
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
 
 jobs:
-  deploy:
+  terraform:
     runs-on: ubuntu-latest
 
-    environment:
-      name: ${{ github.ref_name == 'main' && 'prod' || github.ref_name }}
+    # 1. GitHub Environment → enables approval for prod
+    environment: ${{ github.event.inputs.environment }}
 
-    env:
-      AWS_REGION: us-east-1
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
-      - name: Checkout
+      # 2. Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set environment name
-        id: env
-        run: |
-          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
-            echo "env=prod" >> $GITHUB_OUTPUT
-          else
-            echo "env=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::473208108378:role/github-actions-terraform
-          aws-region: ${{ env.AWS_REGION }}
-
+      # 3 Setup Terraform (BEST PRACTICE)
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6
+          terraform_version: 1.6.6 # pin version
+          terraform_wrapper: false # avoids noisy logs
 
+      # 4. Configure AWS credentials (OIDC)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::473208108378:role/github-actions-terraform-${{ github.event.inputs.environment }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # 5. Terraform Init (remote backend per env)
       - name: Terraform Init
-        working-directory: envs/${{ steps.env.outputs.env }}
+        working-directory: envs/${{ github.event.inputs.environment }}
         run: |
           terraform init \
-            -backend-config="key=s3-static-website/${{ steps.env.outputs.env }}/terraform.tfstate"
+            -backend-config="bucket=${{ vars.BUCKET }}" \
+            -backend-config="key=s3-static-website/${{ github.event.inputs.environment }}/terraform.tfstate" \
+            -backend-config="region=${{ vars.AWS_REGION}}" \
+            -backend-config="use_lockfile=true"
 
+      # 6. Terraform Plan
       - name: Terraform Plan
-        working-directory: envs/${{ steps.env.outputs.env }}
+        working-directory: envs/${{ github.event.inputs.environment }}
         run: |
           terraform plan \
-            -var-file=${{ steps.env.outputs.env }}.tfvars
+            -var "bucket_name=${{ vars.BUCKET}}" \
+            -var "aliases=[${{ secrets.ALIASES }}]" \
+            -var "domain_name=${{ secrets.DOMAIN_NAME }}" \
+            -var "project_name=${{ vars.PROJECT_NAME }}" \
+            -var "environment=${{ github.event.inputs.environment }}" \
+            -var "s3_origin_id=${{ vars.S3_ORIGIN_ID }}" \
+            -out=tfplan
 
+      # 7. Terraform Apply
       - name: Terraform Apply
-        working-directory: envs/${{ steps.env.outputs.env }}
-        run: |
-          terraform apply -auto-approve \
-            -var-file=${{ steps.env.outputs.env }}.tfvars
+        working-directory: envs/${{ github.event.inputs.environment }}
+        run: terraform apply -auto-approve tfplan
 
-      - name: Upload website content to S3
-        working-directory: website-content
+      # 8. Deploy the static website to S3
+      - name: Deploy Static Website to S3
+        # if: ${{ github.event.inputs.environment != 'prod' }}
+        # working-directory: envs/${{ github.event.inputs.environment }}
         run: |
-          BUCKET=$(terraform -chdir=../envs/${{ steps.env.outputs.env }} output -raw s3_bucket_name)
-          aws s3 sync . s3://$BUCKET --delete
+          aws s3 sync ../../website-content/ s3://${{ vars.BUCKET }} --delete
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
 
-      - name: Invalidate CloudFront cache
+      # 9. Output website URL
+      - name: Output Website URL
+        working-directory: envs/${{ github.event.inputs.environment }}
         run: |
-          DIST_ID=$(terraform -chdir=envs/${{ steps.env.outputs.env }} output -raw cloudfront_distribution_id)
-          aws cloudfront create-invalidation \
-            --distribution-id $DIST_ID \
-            --paths "/*"
+          terraform output website_url
