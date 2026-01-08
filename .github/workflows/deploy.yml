@@ -84,13 +84,14 @@ jobs:
       - name: Terraform Destroy
         if: ${{ github.event.inputs.action == 'destroy' }}
         working-directory: envs/${{ github.event.inputs.environment }}
-        run: terraform destroy -auto-approve \
-          -var="bucket_name=${{ secrets.BUCKET_NAME}}" \
-          -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
-          -var="project_name=${{ vars.PROJECT_NAME }}" \
-          -var="environment=${{ github.event.inputs.environment }}" \
-          -var="s3_origin_id=${{ vars.S3_ORIGIN_ID }}" \
-          -var="hosted_zone_id=${{ secrets.HOSTED_ZONE_ID }}"
+        run: |
+          terraform destroy -auto-approve \
+           -var="bucket_name=${{ secrets.BUCKET_NAME}}" \
+           -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
+           -var="project_name=${{ vars.PROJECT_NAME }}" \
+           -var="environment=${{ github.event.inputs.environment }}" \
+           -var="s3_origin_id=${{ vars.S3_ORIGIN_ID }}" \
+           -var="hosted_zone_id=${{ secrets.HOSTED_ZONE_ID }}"
 
       # 8. Deploy the static website to S3
       - name: Deploy Static Website to S3
