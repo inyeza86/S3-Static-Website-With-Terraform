@@ -7,3 +7,8 @@ variable "environment" {
   description = "The deployment environment (e.g., dev, prod)"
   type        = string
 }
+
+variable "cloudfront_distribution_arn" {
+  description = "CloudFront distribution ARN allowed to access the bucket"
+  type        = string
+}

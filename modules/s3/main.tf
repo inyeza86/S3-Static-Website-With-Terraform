@@ -47,7 +47,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
         "Resource" : "${aws_s3_bucket.static_website_bucket.arn}/*",
         "Condition" : {
           "StringEquals" : {
-            "AWS:SourceArn" : aws_cloudfront_distribution.s3_distribution.arn
+            "AWS:SourceArn" : var.cloudfront_distribution_arn
           }
         }
       }

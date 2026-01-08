@@ -10,9 +10,10 @@ data "aws_route53_zone" "my_domain" {
   private_zone = false
 }
 module "s3" {
-  source      = "../../modules/s3"
-  bucket_name = var.bucket_name
-  environment = var.environment
+  source                      = "../../modules/s3"
+  bucket_name                 = var.bucket_name
+  environment                 = var.environment
+  cloudfront_distribution_arn = module.cloudfront.cloudfront_distribution_arn
 }
 
 module "acm" {
