@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "static_website_bucket" {
-  bucket = var.bucket_name
+  bucket        = var.bucket_name
+  force_destroy = true
 }
 
 # Block public access to the bucket
