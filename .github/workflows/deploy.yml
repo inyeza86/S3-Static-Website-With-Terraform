@@ -74,7 +74,7 @@ jobs:
         # if: ${{ github.event.inputs.environment != 'prod' }}
         # working-directory: envs/${{ github.event.inputs.environment }}
         run: |
-          aws s3 sync ../website-content/ s3://${{ secrets.BUCKET_NAME }} --delete
+          aws s3 sync website-content/ s3://${{ secrets.BUCKET_NAME }} --delete
         env:
           AWS_REGION: ${{ vars.REGION }}
 
