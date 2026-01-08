@@ -6,5 +6,5 @@
 
 output "records" {
   description = "Route53 record names"
-  value       = [for r in aws_route53_record.cloudfront : r.value.name]
+  value       = [for r in aws_route53_record.cloudfront : r.name]
 }
