@@ -56,7 +56,7 @@ jobs:
         working-directory: envs/${{ github.event.inputs.environment }}
         run: |
           terraform plan \
-            -var="bucket_name=${{ vars.BUCKET}}" \
+            -var="bucket_name=${{ secrets.BUCKET_NAME}}" \
             -var="domain_name=${{ secrets.DOMAIN_NAME }}" \
             -var="project_name=${{ vars.PROJECT_NAME }}" \
             -var="environment=${{ github.event.inputs.environment }}" \
