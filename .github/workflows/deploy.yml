@@ -76,7 +76,7 @@ jobs:
         run: |
           aws s3 sync ../../website-content/ s3://${{ secrets.BUCKET_NAME }} --delete
         env:
-          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_REGION: ${{ vars.REGION }}
 
       # 9. Output website URL
       - name: Output Website URL
